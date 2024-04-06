@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>BugMine.Web</title>
+        <base href="/"/>
+        <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css"/>
+        <link rel="stylesheet" href="css/app.css"/>
+        <link rel="manifest" href="bugmine.webmanifest"/>
+        <link rel="icon" type="image/png" href="favicon.png"/>
+        <link href="BugMine.Web.styles.css" rel="stylesheet"/>
+    </head>
+
+    <body>
+        <div id="app">
+            <svg class="loading-progress">
+                <circle cx="50%" cy="50%" r="40%"/>
+                <circle cx="50%" cy="50%" r="40%"/>
+            </svg>
+            <div class="loading-progress-text"></div>
+        </div>
+
+        <div id="blazor-error-ui">
+            An unhandled error has occurred.
+            <a class="reload" href="">Reload</a>
+            <a class="dismiss">🗙</a>
+        </div>
+        <script>
+            function BlazorFocusElement(element) {
+                if (element == null) return;
+                if (element instanceof HTMLElement) {
+                    console.log(element);
+                    element.focus();
+                } else if (element.hasOwnProperty("__internalId")) {
+                    console.log("Element is not an HTMLElement", element);
+                }
+            }
+
+            function getWidth(element) {
+                console.log("getWidth", element);
+                if (element == null) return 0;
+                if (element instanceof HTMLElement) {
+                    return element.offsetWidth
+                } else if (element.hasOwnProperty("__internalId")) {
+                    console.log("Element is not an HTMLElement", element);
+                    return 0;
+                }
+                return 0;
+            }
+
+            function getWindowDimensions() {
+                return {
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                };
+            }
+        </script>
+        <script src="_framework/blazor.webassembly.js"></script>
+        <script src="sw-registrator.js"></script>
+    </body>
+
+</html>

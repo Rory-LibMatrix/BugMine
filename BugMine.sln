@@ -1,0 +1,46 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LibMatrix", "LibMatrix", "{8F4F6BEC-0C66-486B-A21A-1C35B2EDAD33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibMatrix", "LibMatrix\LibMatrix\LibMatrix.csproj", "{F4E241C3-0300-4B87-8707-BCBDEF1F0185}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ArcaneLibs", "LibMatrix\ArcaneLibs", "{B00C5CB6-6200-4B41-96BE-C6EAF1085A14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcaneLibs", "LibMatrix\ArcaneLibs\ArcaneLibs\ArcaneLibs.csproj", "{B00E29F5-1ED8-40A0-A70D-DE9F23FC572F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcaneLibs.Blazor.Components", "LibMatrix\ArcaneLibs\ArcaneLibs.Blazor.Components\ArcaneLibs.Blazor.Components.csproj", "{2D6F31D7-3139-44EC-9D11-486282DD4ED1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibMatrix.EventTypes", "LibMatrix\LibMatrix.EventTypes\LibMatrix.EventTypes.csproj", "{1CAA2B6D-0365-4C8B-96EE-26026514FEE2}"
+EndProject
+
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugMine.Web", "BugMine.Web\BugMine.Web.csproj", "{20F5268C-C2C9-4820-8046-C2800E5DE119}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{20F5268C-C2C9-4820-8046-C2800E5DE119}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20F5268C-C2C9-4820-8046-C2800E5DE119}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20F5268C-C2C9-4820-8046-C2800E5DE119}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20F5268C-C2C9-4820-8046-C2800E5DE119}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B00E29F5-1ED8-40A0-A70D-DE9F23FC572F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B00E29F5-1ED8-40A0-A70D-DE9F23FC572F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B00E29F5-1ED8-40A0-A70D-DE9F23FC572F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D6F31D7-3139-44EC-9D11-486282DD4ED1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D6F31D7-3139-44EC-9D11-486282DD4ED1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D6F31D7-3139-44EC-9D11-486282DD4ED1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4E241C3-0300-4B87-8707-BCBDEF1F0185}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4E241C3-0300-4B87-8707-BCBDEF1F0185}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4E241C3-0300-4B87-8707-BCBDEF1F0185}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CAA2B6D-0365-4C8B-96EE-26026514FEE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CAA2B6D-0365-4C8B-96EE-26026514FEE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CAA2B6D-0365-4C8B-96EE-26026514FEE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F4E241C3-0300-4B87-8707-BCBDEF1F0185} = {8F4F6BEC-0C66-486B-A21A-1C35B2EDAD33}
+		{1CAA2B6D-0365-4C8B-96EE-26026514FEE2} = {8F4F6BEC-0C66-486B-A21A-1C35B2EDAD33}
+		{B00E29F5-1ED8-40A0-A70D-DE9F23FC572F} = {B00C5CB6-6200-4B41-96BE-C6EAF1085A14}
+		{2D6F31D7-3139-44EC-9D11-486282DD4ED1} = {B00C5CB6-6200-4B41-96BE-C6EAF1085A14}
+	EndGlobalSection
+EndGlobal

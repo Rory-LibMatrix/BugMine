@@ -1,0 +1,73 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <LinkIncremental>true</LinkIncremental>
+        <LangVersion>preview</LangVersion>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+
+        <UseBlazorWebAssembly>true</UseBlazorWebAssembly>
+        <BlazorEnableCompression>false</BlazorEnableCompression>
+        <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+        <BlazorCacheBootResources>false</BlazorCacheBootResources>
+        <!--        <RunAOTCompilation>true</RunAOTCompilation>-->
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Blazored.LocalStorage" Version="4.4.0"/>
+        <PackageReference Include="Blazored.SessionStorage" Version="2.4.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.1"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.1" PrivateAssets="all"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="8.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Condition="Exists('..\LibMatrix\ArcaneLibs\ArcaneLibs.Blazor.Components\ArcaneLibs.Blazor.Components.csproj')" Include="..\LibMatrix\ArcaneLibs\ArcaneLibs.Blazor.Components\ArcaneLibs.Blazor.Components.csproj"/>
+        <PackageReference Condition="!Exists('..\LibMatrix\ArcaneLibs\ArcaneLibs.Blazor.Components\ArcaneLibs.Blazor.Components.csproj')" Include="ArcaneLibs.Blazor.Components" Version="*-preview*"/>
+        <ProjectReference Include="..\LibMatrix\LibMatrix\LibMatrix.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Update="appsettings.Development.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="appsettings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="wwwroot\appsettings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\css\bootstrap\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\jetbrains-mono.css" />
+      <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\webfonts\JetBrainsMono-Bold.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\webfonts\JetBrainsMono-BoldItalic.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\webfonts\JetBrainsMono-ExtraBold.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\webfonts\JetBrainsMono-ExtraBoldItalic.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\webfonts\JetBrainsMono-ExtraLight.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\webfonts\JetBrainsMono-ExtraLightItalic.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\webfonts\JetBrainsMono-Italic.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\webfonts\JetBrainsMono-Light.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\webfonts\JetBrainsMono-LightItalic.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\webfonts\JetBrainsMono-Medium.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\webfonts\JetBrainsMono-MediumItalic.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\webfonts\JetBrainsMono-Regular.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\webfonts\JetBrainsMono-SemiBold.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\webfonts\JetBrainsMono-SemiBoldItalic.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\webfonts\JetBrainsMono-Thin.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\webfonts\JetBrainsMono-ThinItalic.woff2" />
+    </ItemGroup>
+
+
+</Project>
