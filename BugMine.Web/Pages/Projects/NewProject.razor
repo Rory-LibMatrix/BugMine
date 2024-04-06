@@ -1,0 +1,25 @@
+@page "/Projects/New"
+@using LibMatrix.Responses
+@using BugMine.Web.Classes
+@using ArcaneLibs.Extensions
+<h3>New project</h3>
+
+<span>Project name: </span>
+<FancyTextBox bind-Value="@request.Name"></FancyTextBox>
+<br/>
+<span>Shortname: </span>
+<FancyTextBox bind-Value="@request.RoomAliasName"></FancyTextBox>
+<br/>
+
+@if (Constants.Debug) {
+    <span>Debug: </span>
+    <pre>
+        @request.ToJson()
+    </pre>
+    <br/>
+}
+
+@code {
+    private CreateRoomRequest request = new CreateRoomRequest();
+
+}

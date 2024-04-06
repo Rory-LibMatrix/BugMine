@@ -1,0 +1,22 @@
+@page "/Projects"
+<h3>Projects</h3>
+
+@if (true) {
+    <p>There are no projects to display.</p>
+}
+
+<p>Did not find the project board you are looking for?</p>
+<LinkButton href="/Projects/New">Create new board</LinkButton>
+
+@code {
+
+    private List<Project> projects = new List<Project>();
+
+    
+
+    protected override async Task OnInitializedAsync() {
+        
+    }
+    
+    private class Project { }
+}

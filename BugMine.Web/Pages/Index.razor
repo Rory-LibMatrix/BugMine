@@ -1,0 +1,20 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<h1>Welcome to BugMine!</h1>
+<p>BugMine is a bug/TODO tracker, built ontop of the <a href="https://matrix.org">[Matrix]</a> protocol.</p>
+
+@if (_debug) {
+    <p>Beware! This is a DEBUG build, here be dragons!</p>
+}
+
+@code {
+
+#if DEBUG
+    bool _debug = true;
+#else
+    bool _debug = false;
+#endif
+
+}
