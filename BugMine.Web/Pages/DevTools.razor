@@ -1,0 +1,54 @@
+@page "/DevTools"
+@using LibMatrix.Homeservers
+@using LibMatrix.EventTypes.Spec.State
+<h3>DevTools</h3>
+
+<LinkButton OnClick="@MassCreateProjects">Mass create projects</LinkButton>
+<LinkButton OnClick="@DestroyAllProjects">Destroy all projects</LinkButton>
+
+@code {
+
+    private BugMineClient? Client { get; set; }
+
+    protected override async Task OnInitializedAsync() {
+        Client = await BugMineStorage.GetCurrentSessionOrNavigate();
+    }
+
+    private async Task DestroyAllProjects() {
+        var ss = new SemaphoreSlim(16, 16);
+        await foreach (var proj in Client.Homeserver.GetJoinedRoomsByType(BugMineProject.RoomType)) {
+            Task.Run(async () => {
+                await ss.WaitAsync();
+                await proj.SendStateEventAsync(RoomNameEventContent.EventId, new RoomNameEventContent() {
+                    Name = "Disbanded BugMine project."
+                });
+                await proj.SendStateEventAsync(RoomJoinRulesEventContent.EventId, new RoomJoinRulesEventContent() {
+                    JoinRule = RoomJoinRulesEventContent.JoinRules.Private
+                });
+                await proj.SendStateEventAsync(RoomCanonicalAliasEventContent.EventId, new RoomCanonicalAliasEventContent() {
+                    Alias = null
+                });
+                await proj.LeaveAsync("Disbanded room.");
+                ss.Release();
+            });
+        }
+    }
+
+    private async Task MassCreateProjects() {
+        // var rooms = await Client.Homeserver.GetJoinedRooms();
+        // List<string> roomNames = (await Task.WhenAll(rooms.Select(x => x.GetNameAsync()))).Where(x => x != null).ToList();
+        for (int i = 0; i < 5; i++) {
+            Task.Run(async () => {
+                // var randomName = roomNames[Random.Shared.Next(roomNames.Count)];
+                var proj = await Client.CreateProject(new() {
+                    Name = /*randomName + */Guid.NewGuid().ToString()[..8]
+                });
+                
+                await proj.CreateIssue(new() {
+                    Name = "meow"
+                });
+            });
+        }
+    }
+
+}

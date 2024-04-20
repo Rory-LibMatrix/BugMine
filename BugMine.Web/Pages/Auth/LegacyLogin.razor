@@ -1,0 +1,71 @@
+@page "/Auth/LegacyLogin"
+@using System.Text.Json.Serialization
+@using LibMatrix.Services
+@inject HomeserverProviderService hsProvider
+<h3>Login</h3>
+<hr/>
+
+<span style="display: block;">
+    <label>User ID:</label>
+    <span>@@</span><!--
+    --><FancyTextBox @bind-Value="@authData.Username"></FancyTextBox><!--
+    --><span>:</span><!--
+    --><FancyTextBox @bind-Value="@authData.Homeserver"></FancyTextBox>
+</span>
+<span style="display: block;">
+    <label>Password:</label>
+    <FancyTextBox @bind-Value="@authData.Password" IsPassword="true"></FancyTextBox>
+</span>
+<span style="display: block">
+    <label>Proxy (<a href="https://cgit.rory.gay/matrix/MxApiExtensions.git">MxApiExtensions</a> or similar):</label>
+    <FancyTextBox @bind-Value="@authData.Proxy"></FancyTextBox>
+</span>
+<br/>
+<LinkButton OnClick="@(() => LoginWithAuth(authData))">Log in</LinkButton>
+
+<h4>Continue as guest</h4>
+<hr/>
+<LinkButton OnClick="@(() => LoginWithAuth(new LoginStruct { Homeserver = "matrix.org", Username = "guest", Password = "guest" }))">Log in as guest</LinkButton>
+
+@code {
+    private LoginStruct authData = new();
+
+    List<UserAuth>? LoggedInSessions { get; set; } = new();
+    
+    async Task LoginWithAuth(LoginStruct record) {
+        if (LoggedInSessions.Any(x => x.UserId == $"@{record.Username}:{record.Homeserver}" && x.Proxy == record.Proxy)) return;
+        StateHasChanged();
+        try {
+            var result = new UserAuth(await hsProvider.Login(record.Homeserver, record.Username, record.Password, record.Proxy)) {
+                Proxy = record.Proxy
+            };
+            if (result == null) {
+                Console.WriteLine($"Failed to login to {record.Homeserver} as {record.Username}!");
+                return;
+            }
+
+            Console.WriteLine($"Obtained access token for {result.UserId}!");
+
+            await BugMineStorage.AddToken(result);
+            await BugMineStorage.SetCurrentToken(result);
+        }
+        catch (Exception e) {
+            Console.WriteLine($"Failed to login to {record.Homeserver} as {record.Username}!");
+            Console.WriteLine(e);
+            record.Exception = e;
+        }
+
+        StateHasChanged();
+    }
+
+    private class LoginStruct {
+        public string? Homeserver { get; set; } = "";
+        public string? Username { get; set; } = "";
+        public string? Password { get; set; } = "";
+        public string? Proxy { get; set; }
+        
+        [JsonIgnore]
+        internal Exception? Exception { get; set; }
+    }
+
+}

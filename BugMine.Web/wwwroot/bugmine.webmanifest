@@ -1,7 +1,7 @@
 {
-  "name": "Rory&::MatrixUtils",
-  "short_name": "RMU",
-  "description": "A collection of Matrix utilities.",
+  "name": "BugMine",
+  "short_name": "BugMine",
+  "description": "A [Matrix] based, decentralised issue tracker",
   "icons": [
     {
       "src": "icon-192.png",

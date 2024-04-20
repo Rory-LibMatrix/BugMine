@@ -1,0 +1,18 @@
+<pre style="width: fit-content; height: fit-content; background-color: transparent; color: white; rotate: @(i)deg;">|</pre>
+
+@code {
+    int i = 0;
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Task.Run(async () =>
+        {
+            while (true)
+            {
+                await Task.Delay(12);
+                i+=10;
+                StateHasChanged();
+            }
+        });
+    }
+}

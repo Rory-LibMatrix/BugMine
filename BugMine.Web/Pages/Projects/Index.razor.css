@@ -1,0 +1,26 @@
+.projects {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    gap: 1rem;
+    padding-bottom: 1rem;
+}
+
+.project-card {
+    display: flex;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background-color: var(--bs-dark);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
+    transition: background-color 1s, box-shadow 3s;
+}
+
+.project-icon {
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    margin-right: 1rem;
+}
+
+.project-name {
+    display: inline;
+}

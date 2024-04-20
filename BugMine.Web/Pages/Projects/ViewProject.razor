@@ -1,0 +1,33 @@
+@page "/Projects/{ProjectSlug}/"
+
+<ProgressLog ></ProgressLog>
+
+@if (Client is null) {
+    <p>Authenticating</p>
+}
+else if(Project is null) {
+    <p>Loading</p>
+}
+else {
+    <h1>@Project.Info.Name</h1>
+    @* <p>@Project.Description</p> *@
+}
+
+@code {
+    [Parameter] public string ProjectSlug { get; set; }
+    
+    private BugMineClient? Client { get; set; }
+
+    private BugMineProject? Project { get; set; }
+
+    protected override async Task OnInitializedAsync() {
+        Client = await BugMineStorage.GetCurrentSessionOrNavigate();
+        if (Client == null) {
+            return;
+        }
+        StateHasChanged();
+        
+        Project = await Client.GetProject(ProjectSlug);
+    }
+
+}

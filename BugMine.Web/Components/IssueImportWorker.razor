@@ -1,0 +1,25 @@
+@using LibMatrix.Homeservers
+@inject ILogger<IssueImportWorker> Logger
+@if(Client == null) {
+    <span>Not logged in.</span>
+    <a href="/Auth/Login">Login</a>
+} else {
+    
+    <span>Logged in as @Client.Homeserver.UserId</span>
+    <a href="/Auth/Logout">Logout</a>
+}
+
+@code {
+
+    private BugMineClient? Client { get; set; }
+    private string Status { get; set; } = "";
+    protected override async Task OnInitializedAsync() {
+        while(Client == null) {
+            Client = await BugMineStorage.GetCurrentSessionOrNull();
+            if(Client == null) {
+                await Task.Delay(1000);
+            }
+        }
+    }
+
+}

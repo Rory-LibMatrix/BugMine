@@ -24,6 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\BugMine.Sdk\BugMine.Sdk.csproj" />
         <ProjectReference Condition="Exists('..\LibMatrix\ArcaneLibs\ArcaneLibs.Blazor.Components\ArcaneLibs.Blazor.Components.csproj')" Include="..\LibMatrix\ArcaneLibs\ArcaneLibs.Blazor.Components\ArcaneLibs.Blazor.Components.csproj"/>
         <PackageReference Condition="!Exists('..\LibMatrix\ArcaneLibs\ArcaneLibs.Blazor.Components\ArcaneLibs.Blazor.Components.csproj')" Include="ArcaneLibs.Blazor.Components" Version="*-preview*"/>
         <ProjectReference Include="..\LibMatrix\LibMatrix\LibMatrix.csproj"/>
@@ -67,6 +68,7 @@
       <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\webfonts\JetBrainsMono-SemiBoldItalic.woff2" />
       <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\webfonts\JetBrainsMono-Thin.woff2" />
       <_ContentIncludedByDefault Remove="wwwroot\tmp\css\jetbrains-mono\webfonts\JetBrainsMono-ThinItalic.woff2" />
+      <_ContentIncludedByDefault Remove="wwwroot\sample-data\weather.json" />
     </ItemGroup>
 
 

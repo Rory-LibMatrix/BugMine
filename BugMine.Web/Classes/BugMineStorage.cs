@@ -1,20 +1,25 @@
 using LibMatrix;
 using LibMatrix.Homeservers;
+using LibMatrix.Interfaces.Services;
 using LibMatrix.Services;
 using Microsoft.AspNetCore.Components;
 
 namespace BugMine.Web.Classes;
 
-public class BugMineStorage(ILogger<BugMineStorage> logger, TieredStorageService storageService, HomeserverProviderService homeserverProviderService, NavigationManager navigationManager) {
+public class BugMineStorage(
+    ILogger<BugMineStorage> logger,
+    IStorageProvider localStorage,
+    HomeserverProviderService homeserverProviderService,
+    NavigationManager navigationManager) {
     public async Task<List<UserAuth>?> GetAllTokens() {
         logger.LogTrace("Getting all tokens.");
-        return await storageService.DataStorageProvider!.LoadObjectAsync<List<UserAuth>>("bugmine.tokens") ??
+        return await localStorage.LoadObjectAsync<List<UserAuth>>("bugmine.tokens") ??
                new List<UserAuth>();
     }
 
     public async Task<UserAuth?> GetCurrentToken() {
         logger.LogTrace("Getting current token.");
-        var currentToken = await storageService.DataStorageProvider!.LoadObjectAsync<UserAuth>("bugmine.token");
+        var currentToken = await localStorage.LoadObjectAsync<UserAuth>("bugmine.token");
         var allTokens = await GetAllTokens();
         if (allTokens is null or { Count: 0 }) {
             await SetCurrentToken(null);
@@ -37,27 +42,40 @@ public class BugMineStorage(ILogger<BugMineStorage> logger, TieredStorageService
         var tokens = await GetAllTokens() ?? new List<UserAuth>();
 
         tokens.Add(UserAuth);
-        await storageService.DataStorageProvider!.SaveObjectAsync("bugmine.tokens", tokens);
+        await localStorage!.SaveObjectAsync("bugmine.tokens", tokens);
     }
 
-    private async Task<AuthenticatedHomeserverGeneric?> GetCurrentSession() {
+    private async Task<BugMineClient?> GetCurrentSession() {
         logger.LogTrace("Getting current session.");
         var token = await GetCurrentToken();
         if (token == null) {
             return null;
         }
 
-        return await homeserverProviderService.GetAuthenticatedWithToken(token.Homeserver, token.AccessToken, token.Proxy);
+        var hc = await homeserverProviderService.GetAuthenticatedWithToken(token.Homeserver, token.AccessToken, token.Proxy, useGeneric: true);
+        return new BugMineClient(hc);
     }
 
-    public async Task<AuthenticatedHomeserverGeneric?> GetSession(UserAuth userAuth) {
+    public async Task<BugMineClient?> GetSession(UserAuth userAuth) {
         logger.LogTrace("Getting session.");
-        return await homeserverProviderService.GetAuthenticatedWithToken(userAuth.Homeserver, userAuth.AccessToken, userAuth.Proxy);
+        var hc = await homeserverProviderService.GetAuthenticatedWithToken(userAuth.Homeserver, userAuth.AccessToken, userAuth.Proxy, useGeneric: true);
+        return new BugMineClient(hc);
     }
 
-    public async Task<AuthenticatedHomeserverGeneric?> GetCurrentSessionOrNavigate() {
+    public async Task<BugMineClient?> GetCurrentSessionOrNavigate() {
         logger.LogTrace("Getting current session or navigating.");
-        AuthenticatedHomeserverGeneric? session = null;
+        var session = await GetCurrentSessionOrNull();
+        
+        if (session is null) {
+            logger.LogInformation("No session found. Navigating to login.");
+            navigationManager.NavigateTo("/Login");
+        }
+
+        return session;
+    }
+
+    public async Task<BugMineClient?> GetCurrentSessionOrNull() {
+        BugMineClient? session = null;
 
         try {
             //catch if the token is invalid
@@ -74,11 +92,6 @@ public class BugMineStorage(ILogger<BugMineStorage> logger, TieredStorageService
             throw;
         }
 
-        if (session is null) {
-            logger.LogInformation("No session found. Navigating to login.");
-            navigationManager.NavigateTo("/Login");
-        }
-
         return session;
     }
 
@@ -90,11 +103,11 @@ public class BugMineStorage(ILogger<BugMineStorage> logger, TieredStorageService
         }
 
         tokens.RemoveAll(x => x.AccessToken == auth.AccessToken);
-        await storageService.DataStorageProvider.SaveObjectAsync("bugmine.tokens", tokens);
+        await localStorage.SaveObjectAsync("bugmine.tokens", tokens);
     }
 
     public async Task SetCurrentToken(UserAuth? auth) {
         logger.LogTrace("Setting current token.");
-        await storageService.DataStorageProvider.SaveObjectAsync("bugmine.token", auth);
+        await localStorage.SaveObjectAsync("bugmine.token", auth);
     }
 }

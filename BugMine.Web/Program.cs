@@ -6,6 +6,8 @@ using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using BugMine.Web;
+using BugMine.Web.Classes;
+using LibMatrix.Interfaces.Services;
 using LibMatrix.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -52,5 +54,9 @@ builder.Services.AddBlazoredSessionStorage(config => {
     config.JsonSerializerOptions.WriteIndented = false;
 });
 
-builder.Services.AddRoryLibMatrixServices();
+// builder.Services.AddRoryLibMatrixServices();
+builder.Services.AddBugMine();
+builder.Services.AddScoped<IStorageProvider, LocalStorageProviderService>();
+builder.Services.AddScoped<BugMineStorage>();
+
 await builder.Build().RunAsync();

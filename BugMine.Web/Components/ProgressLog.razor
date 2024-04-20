@@ -1,0 +1,16 @@
+@using System.Collections.ObjectModel
+
+
+@code {
+    private ObservableCollection<string> _messages = new ObservableCollection<string>();
+
+    private ObservableCollection<string> Messages {
+        get => _messages;
+        set {
+            _messages = value;
+            _messages.CollectionChanged += (_, _) => StateHasChanged();
+            StateHasChanged();
+        }
+    }
+
+}

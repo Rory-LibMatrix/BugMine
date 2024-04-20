@@ -1,0 +1,18 @@
+@page "/Auth/Logout"
+<p>Logging out...</p>
+
+@code {
+
+    protected override async Task OnInitializedAsync() {
+        var client = await BugMineStorage.GetCurrentSessionOrNull();
+        if (client != null) {
+            await client.Homeserver.Logout();
+        }
+
+        await BugMineStorage.RemoveToken(await BugMineStorage.GetCurrentToken());
+        await BugMineStorage.SetCurrentToken(null);
+
+        NavigationManager.NavigateTo("/", true);
+    }
+
+}

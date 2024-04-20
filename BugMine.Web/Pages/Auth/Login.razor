@@ -1,0 +1,69 @@
+@page "/Auth/Login"
+@using ArcaneLibs.Extensions
+@using LibMatrix.Homeservers
+@using LibMatrix.Services
+@inject HomeserverProviderService hsProvider
+<h3>Login</h3>
+<hr/>
+<p>Notice: this doesn't work yet, please use <a href="/Auth/LegacyLogin">legacy login</a>.</p>
+<span style="display: block;">
+    <span>Homeserver: </span>
+    <FancyTextBox @bind-Value="@HomeserverName"></FancyTextBox>
+</span>
+
+@* <span style="display: block;"> *@
+@*     <label>User ID:</label> *@
+@*     <span>@@</span><!-- *@
+@*     --><FancyTextBox @bind-Value="@authData.Username"></FancyTextBox><!-- *@
+@*     --><span>:</span><!-- *@
+@*     --><FancyTextBox @bind-Value="@authData.Homeserver"></FancyTextBox> *@
+@* </span> *@
+@* <span style="display: block;"> *@
+@*     <label>Password:</label> *@
+@*     <FancyTextBox @bind-Value="@authData.Password" IsPassword="true"></FancyTextBox> *@
+@* </span> *@
+@* <br/> *@
+@* <LinkButton OnClick="@(() => LoginWithAuth(authData))">Log in</LinkButton> *@
+
+@if (Constants.Debug) {
+    <br/>
+    <span>Auth client state:</span>
+    <pre>
+        @Homeserver?.Auth.ToJson()
+    </pre>
+    <span>Current stage:</span>
+    <pre>
+        @CurrentStage?.ToJson()
+    </pre>
+}
+
+@code {
+    private string? _homeserverName = null;
+
+    private string? HomeserverName {
+        get => _homeserverName;
+        set {
+            _homeserverName = value;
+            HomeserverChanged();
+        }
+    }
+
+    public RemoteHomeserver? Homeserver { get; set; }
+    public UserInteractiveAuthClient.IUIAStage CurrentStage { get; set; } = null!;
+
+    //oninit
+    protected override async Task OnInitializedAsync() {
+        HomeserverName = "matrixunittests.rory.gay";
+    }
+
+    public async Task HomeserverChanged() {
+        if (string.IsNullOrWhiteSpace(HomeserverName)) return;
+        Homeserver = await hsProvider.GetRemoteHomeserver(HomeserverName);
+        CurrentStage = await Homeserver.Auth.GetAvailableFlowsAsync(enableRegister: true, enableGuest: true);
+        
+
+        StateHasChanged();
+    }
+
+}
+

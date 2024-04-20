@@ -1,25 +1,47 @@
 @page "/Projects/New"
-@using LibMatrix.Responses
-@using BugMine.Web.Classes
 @using ArcaneLibs.Extensions
 <h3>New project</h3>
 
 <span>Project name: </span>
-<FancyTextBox bind-Value="@request.Name"></FancyTextBox>
+<FancyTextBox @bind-Value="@_request.Name"></FancyTextBox>
 <br/>
-<span>Shortname: </span>
-<FancyTextBox bind-Value="@request.RoomAliasName"></FancyTextBox>
+<span>Project repository: </span>
+<FancyTextBox @bind-Value="@_request.Repository"></FancyTextBox>
 <br/>
+@* <span>Room alias: </span> *@
+@* <FancyTextBox @bind-Value="@_request."></FancyTextBox> *@
+@* <br/> *@
 
 @if (Constants.Debug) {
     <span>Debug: </span>
     <pre>
-        @request.ToJson()
+        @_request.ToJson()
     </pre>
     <br/>
 }
 
+<LinkButton OnClick="@CreateProject">Create project</LinkButton>
+
 @code {
-    private CreateRoomRequest request = new CreateRoomRequest();
+
+    private BugMineClient? Client { get; set; }
+
+    private readonly ProjectInfo _request = new();
+
+    protected override async Task OnInitializedAsync() {
+        Client = await BugMineStorage.GetCurrentSessionOrNavigate();
+        if (Client == null) {
+            return;
+        }
+    }
+
+    private async Task CreateProject() {
+        if (Client == null) {
+            return;
+        }
+
+        var proj = await Client.CreateProject(_request);
+        NavigationManager.NavigateTo($"/Projects/{proj.ProjectSlug}/");
+    }
 
 }

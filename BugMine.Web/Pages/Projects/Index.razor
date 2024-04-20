@@ -1,8 +1,25 @@
 @page "/Projects"
+@using LibMatrix.Homeservers
 <h3>Projects</h3>
 
-@if (true) {
+@if (Projects.Count == 0) {
     <p>There are no projects to display.</p>
+}
+else {
+    <div class="projects">
+        @foreach (var project in Projects) {
+            <div class="card project-card" @onclick="@(()=>Navigate(project))">
+                @if (string.IsNullOrWhiteSpace(project.Info.ProjectIcon)) {
+                    <img class="project-icon" src="/icon-512.png">
+                }
+                else {
+                    <img class="project-icon" src="/icon-512.png">
+                }
+                <span class="project-name">@project.Info.Name</span>
+            </div>
+            @* <p>@project.Info.Name</p> *@
+        }
+    </div>
 }
 
 <p>Did not find the project board you are looking for?</p>
@@ -10,13 +27,26 @@
 
 @code {
 
-    private List<Project> projects = new List<Project>();
-
-    
+    private BugMineClient? Client { get; set; }
+    private List<BugMineProject> Projects { get; set; } = [];
+    private CancellationTokenSource? _cts = new();
 
     protected override async Task OnInitializedAsync() {
-        
+        Client = await BugMineStorage.GetCurrentSessionOrNavigate();
+        if (Client == null) {
+            return;
+        }
+
+        await foreach (var project in Client.GetProjects()) {
+            Projects.Add(project);
+            StateHasChanged();
+            // await Task.Delay(100);
+        }
     }
-    
-    private class Project { }
+
+    private async Task Navigate(BugMineProject project) {
+        Console.WriteLine($"Navigating to {project.ProjectSlug}");
+        NavigationManager.NavigateTo($"/Projects/{project.ProjectSlug}/");
+    }
+
 }
