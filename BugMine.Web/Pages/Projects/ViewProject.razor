@@ -1,33 +1,114 @@
 @page "/Projects/{ProjectSlug}/"
+@using LibMatrix
+@using BugMine.Web.Classes.Exceptions
 
 <ProgressLog ></ProgressLog>
 
 @if (Client is null) {
     <p>Authenticating</p>
 }
-else if(Project is null) {
-    <p>Loading</p>
+else if (Project is null) {
+    @if (Progress == "loading") {
+        <p>Loading project <SimpleSpinner/></p>
+    }
+    else if (Progress == "not-in-room") {
+        <p>You are not in the project room.</p>
+        <p>You must join before you can view or interact with this project.</p>
+        <LinkButton OnClick="TryJoin">Attempt to join</LinkButton>
+    }
 }
 else {
     <h1>@Project.Info.Name</h1>
+
+    @if (Constants.Debug) {
+        <p>Debug, beware: here be dragons!</p>
+        <LinkButton OnClick="@Project.Room.PermanentlyBrickRoomAsync">Dispose room</LinkButton>
+    }
+    
+    @if (Progress == "loading-issues") {
+        <p>Loading issues, got @(Issues?.Count ?? 0) so far... <SimpleSpinner/></p>
+    }
     @* <p>@Project.Description</p> *@
 }
 
 @code {
-    [Parameter] public string ProjectSlug { get; set; }
-    
+    private string? _progress = "loading";
+
+    [Parameter]
+    public string ProjectSlug { get; set; } = null!;
+
     private BugMineClient? Client { get; set; }
 
     private BugMineProject? Project { get; set; }
+    
+    private List<BugMineIssue>? Issues { get; set; }
+
+    private string? Progress {
+        get => _progress;
+        set {
+            _progress = value;
+            StateHasChanged();
+        }
+    }
 
     protected override async Task OnInitializedAsync() {
-        Client = await BugMineStorage.GetCurrentSessionOrNavigate();
+        Client ??= await BugMineStorage.GetCurrentSessionOrNavigate();
         if (Client == null) {
             return;
         }
+
+        Progress = "loading";
         StateHasChanged();
+
+        try {
+            Project = await Client.GetProject(ProjectSlug);
+        }
+        catch (MatrixException e) {
+            if (e.ErrorCode == BugMineException.ErrorCodes.UserNotInRoom) {
+                Progress = "not-in-room";
+                StateHasChanged();
+                return;
+            }
+
+            throw;
+        }
         
-        Project = await Client.GetProject(ProjectSlug);
+        Progress = "loading-issues";
+        await foreach (var issue in Project.GetIssues()) {
+            Issues ??= new List<BugMineIssue>();
+            Issues.Add(issue);
+            StateHasChanged();
+        }
+        
+
+        StateHasChanged();
+    }
+
+    private async Task TryJoin() {
+        var room = await Client.ResolveProjectSlug(ProjectSlug);
+        bool success = false;
+        while (!success) {
+            try {
+                await room.JoinAsync();
+                if (!string.IsNullOrWhiteSpace(room.RoomId)) {
+                    success = true;
+                }
+                else {
+                    await Task.Delay(1000);
+                }
+            }
+            catch (MatrixException e) {
+                // if (e.ErrorCode == MatrixException.ErrorCodes.) {
+                // await Task.Delay(1000);
+                // continue;
+                // }
+
+                throw;
+            }
+        }
+
+        await OnInitializedAsync();
     }
 
 }
+

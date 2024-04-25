@@ -74,7 +74,7 @@ public class BugMineStorage(
         return session;
     }
 
-    public async Task<BugMineClient?> GetCurrentSessionOrNull() {
+    public async Task<BugMineClient?> GetCurrentSessionOrNull(bool navigateOnInvalid = true) {
         BugMineClient? session = null;
 
         try {
@@ -85,7 +85,7 @@ public class BugMineStorage(
             if (e.ErrorCode == "M_UNKNOWN_TOKEN") {
                 var token = await GetCurrentToken();
                 logger.LogWarning("Encountered invalid token for {user} on {homeserver}", token.UserId, token.Homeserver);
-                navigationManager.NavigateTo("/InvalidSession?ctx=" + token.AccessToken);
+                if (navigateOnInvalid) navigationManager.NavigateTo("/InvalidSession?ctx=" + token.AccessToken);
                 return null;
             }
 

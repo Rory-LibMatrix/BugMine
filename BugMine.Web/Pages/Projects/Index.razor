@@ -2,7 +2,13 @@
 @using LibMatrix.Homeservers
 <h3>Projects</h3>
 
-@if (Projects.Count == 0) {
+@if (Client == null) {
+    <p>Authenticating... <SimpleSpinner/></p>
+}
+else if (Projects is null) {
+    <p>Loading projects... <SimpleSpinner/></p>
+}
+else if (Projects.Count == 0) {
     <p>There are no projects to display.</p>
 }
 else {
@@ -28,7 +34,7 @@ else {
 @code {
 
     private BugMineClient? Client { get; set; }
-    private List<BugMineProject> Projects { get; set; } = [];
+    private List<BugMineProject>? Projects { get; set; }
     private CancellationTokenSource? _cts = new();
 
     protected override async Task OnInitializedAsync() {
@@ -36,12 +42,17 @@ else {
         if (Client == null) {
             return;
         }
-
+        StateHasChanged();
+        
         await foreach (var project in Client.GetProjects()) {
+            Projects ??= [];
             Projects.Add(project);
             StateHasChanged();
             // await Task.Delay(100);
         }
+
+        Projects ??= [];
+        StateHasChanged();
     }
 
     private async Task Navigate(BugMineProject project) {

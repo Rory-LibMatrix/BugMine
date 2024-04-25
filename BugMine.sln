@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugMine.Web", "BugMine.Web\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugMine.Sdk", "BugMine.Sdk\BugMine.Sdk.csproj", "{EC02CDCE-8DDD-42AF-80AE-92A15A9B5AC4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugMine.DevTools.CLI", "BugMine.DevTools.CLI\BugMine.DevTools.CLI.csproj", "{E4E398A6-98CE-4B78-9E80-42A03765CE07}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +44,10 @@ Global
 		{EC02CDCE-8DDD-42AF-80AE-92A15A9B5AC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC02CDCE-8DDD-42AF-80AE-92A15A9B5AC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC02CDCE-8DDD-42AF-80AE-92A15A9B5AC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4E398A6-98CE-4B78-9E80-42A03765CE07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4E398A6-98CE-4B78-9E80-42A03765CE07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4E398A6-98CE-4B78-9E80-42A03765CE07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4E398A6-98CE-4B78-9E80-42A03765CE07}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F4E241C3-0300-4B87-8707-BCBDEF1F0185} = {8F4F6BEC-0C66-486B-A21A-1C35B2EDAD33}

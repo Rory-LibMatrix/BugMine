@@ -61,7 +61,6 @@
         Homeserver = await hsProvider.GetRemoteHomeserver(HomeserverName);
         CurrentStage = await Homeserver.Auth.GetAvailableFlowsAsync(enableRegister: true, enableGuest: true);
         
-
         StateHasChanged();
     }
 

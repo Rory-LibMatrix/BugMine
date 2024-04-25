@@ -15,10 +15,10 @@
     }
 
     private async Task DestroyAllProjects() {
-        var ss = new SemaphoreSlim(16, 16);
+        var ss = new SemaphoreSlim(4, 4);
         await foreach (var proj in Client.Homeserver.GetJoinedRoomsByType(BugMineProject.RoomType)) {
-            Task.Run(async () => {
-                await ss.WaitAsync();
+            // Task.Run(async () => {
+                // await ss.WaitAsync();
                 await proj.SendStateEventAsync(RoomNameEventContent.EventId, new RoomNameEventContent() {
                     Name = "Disbanded BugMine project."
                 });
@@ -29,15 +29,15 @@
                     Alias = null
                 });
                 await proj.LeaveAsync("Disbanded room.");
-                ss.Release();
-            });
+                // ss.Release();
+            // });
         }
     }
 
     private async Task MassCreateProjects() {
         // var rooms = await Client.Homeserver.GetJoinedRooms();
         // List<string> roomNames = (await Task.WhenAll(rooms.Select(x => x.GetNameAsync()))).Where(x => x != null).ToList();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 20; i++) {
             Task.Run(async () => {
                 // var randomName = roomNames[Random.Shared.Next(roomNames.Count)];
                 var proj = await Client.CreateProject(new() {

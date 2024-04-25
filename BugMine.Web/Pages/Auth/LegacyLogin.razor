@@ -23,7 +23,7 @@
 <br/>
 <LinkButton OnClick="@(() => LoginWithAuth(authData))">Log in</LinkButton>
 
-<h4>Continue as guest</h4>
+<h4>Continue as guest (doesn't work)</h4>
 <hr/>
 <LinkButton OnClick="@(() => LoginWithAuth(new LoginStruct { Homeserver = "matrix.org", Username = "guest", Password = "guest" }))">Log in as guest</LinkButton>
 

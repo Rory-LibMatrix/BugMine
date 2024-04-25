@@ -15,7 +15,7 @@
     private string Status { get; set; } = "";
     protected override async Task OnInitializedAsync() {
         while(Client == null) {
-            Client = await BugMineStorage.GetCurrentSessionOrNull();
+            Client = await BugMineStorage.GetCurrentSessionOrNull(false);
             if(Client == null) {
                 await Task.Delay(1000);
             }
