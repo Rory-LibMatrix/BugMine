@@ -11,10 +11,11 @@ namespace BugMine.Web.Classes;
 public class BugMineClient(AuthenticatedHomeserverGeneric homeserver) {
     public AuthenticatedHomeserverGeneric Homeserver { get; } = homeserver;
 
-    public async IAsyncEnumerable<BugMineProject> GetProjects() {
+    public async IAsyncEnumerable<BugMineProject> GetProjects(SemaphoreSlim? semaphore = null) {
         List<Task<BugMineProject>> tasks = [];
-        await foreach (var room in homeserver.GetJoinedRoomsByType(BugMineProject.RoomType)) {
-            tasks.Add(room.AsBugMineProject());
+        int count = 0;
+        await foreach (var room in homeserver.GetJoinedRoomsByType(BugMineProject.RoomType, 64)) {
+            tasks.Add(room.AsBugMineProject(semaphore));
         }
 
         var results = tasks.ToAsyncEnumerable();
@@ -46,10 +47,14 @@ public class BugMineClient(AuthenticatedHomeserverGeneric homeserver) {
             ]
         };
 
-        var response = await Homeserver.CreateRoom(crr);
-        // await response.SendStateEventAsync(ProjectInfo.EventId, request);
+        var newRoom = await Homeserver.CreateRoom(crr);
+        var timeline = await newRoom.GetMessagesAsync();
+        
+        await newRoom.SendStateEventAsync(BugMineRoomMetadata.EventId, new BugMineRoomMetadata() {
+            RoomCreationEventId = timeline.Chunk.Single(m => m.Type == "m.room.create").EventId!
+        });
 
-        return await response.AsBugMineProject();
+        return await newRoom.AsBugMineProject();
     }
 
     public async Task<BugMineProject?> GetProject(string projectSlug) {

@@ -1,6 +1,7 @@
 @page "/Projects/{ProjectSlug}/"
 @using LibMatrix
 @using BugMine.Web.Classes.Exceptions
+@using ArcaneLibs.Extensions
 
 <ProgressLog ></ProgressLog>
 
@@ -29,6 +30,11 @@ else {
         <p>Loading issues, got @(Issues?.Count ?? 0) so far... <SimpleSpinner/></p>
     }
     @* <p>@Project.Description</p> *@
+    @if (Issues != null) {
+        @foreach(var issue in Issues) {
+            <pre>@issue.Data.RawContent.ToJson()</pre>
+        }
+    }
 }
 
 @code {

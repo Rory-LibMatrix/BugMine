@@ -43,12 +43,14 @@ else {
             return;
         }
         StateHasChanged();
-        
-        await foreach (var project in Client.GetProjects()) {
+
+        int count = 0;
+        SemaphoreSlim semaphore = new(16, 16);
+        await foreach (var project in Client.GetProjects(semaphore)) {
             Projects ??= [];
             Projects.Add(project);
-            StateHasChanged();
-            // await Task.Delay(100);
+            if(count++ <= 250 || count % 4 == 0)
+                StateHasChanged();
         }
 
         Projects ??= [];

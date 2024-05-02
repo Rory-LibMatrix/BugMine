@@ -16,3 +16,4 @@ test-proxy.tsv
 homeservers.txt
 LoginPayload.txt
 LoginPayload.txt.old
+BugMine.DevTools.CLI/auth.json

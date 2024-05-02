@@ -48,6 +48,7 @@
 
             await BugMineStorage.AddToken(result);
             await BugMineStorage.SetCurrentToken(result);
+            NavigationManager.NavigateTo("/", forceLoad: true);
         }
         catch (Exception e) {
             Console.WriteLine($"Failed to login to {record.Homeserver} as {record.Username}!");
