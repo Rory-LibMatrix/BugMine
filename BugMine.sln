@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E25BCB86
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibMatrix.HomeserverEmulator", "LibMatrix\Tests\LibMatrix.HomeserverEmulator\LibMatrix.HomeserverEmulator.csproj", "{630BD644-B739-4876-B45C-085FF60C7269}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BugMine.CLI", "BugMine.CLI\BugMine.CLI.csproj", "{00F38C3E-324F-4D50-9BEB-16FABBDCFCEC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{630BD644-B739-4876-B45C-085FF60C7269}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{630BD644-B739-4876-B45C-085FF60C7269}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{630BD644-B739-4876-B45C-085FF60C7269}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00F38C3E-324F-4D50-9BEB-16FABBDCFCEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00F38C3E-324F-4D50-9BEB-16FABBDCFCEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00F38C3E-324F-4D50-9BEB-16FABBDCFCEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00F38C3E-324F-4D50-9BEB-16FABBDCFCEC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F4E241C3-0300-4B87-8707-BCBDEF1F0185} = {8F4F6BEC-0C66-486B-A21A-1C35B2EDAD33}
