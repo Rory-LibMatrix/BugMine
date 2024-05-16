@@ -115,7 +115,7 @@ public class Worker(ILogger<Worker> logger, HomeserverProviderService hsProvider
                 // await proj.SendStateEventAsync(RoomCanonicalAliasEventContent.EventId, new RoomCanonicalAliasEventContent() {
                 //     Alias = null
                 // });
-                await proj.LeaveAsync("Disbanded room.");
+                await proj.LeaveAsync("[BugMine.DevTools.CLI] Disbanding project.");
                 // ss.Release();
             });
         }

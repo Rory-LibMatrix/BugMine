@@ -46,7 +46,7 @@ else {
 
         int count = 0;
         SemaphoreSlim semaphore = new(16, 16);
-        await foreach (var project in Client.GetProjects(semaphore)) {
+        await foreach (var project in Client.GetProjects(semaphore, ignoreInvalidBoards: true)) {
             Projects ??= [];
             Projects.Add(project);
             if(count++ <= 250 || count % 4 == 0)

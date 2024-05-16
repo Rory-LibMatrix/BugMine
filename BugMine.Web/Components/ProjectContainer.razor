@@ -1,0 +1,152 @@
+@using System.Text.Json.Serialization
+@using ArcaneLibs.Extensions
+@using BugMine.Web.Classes.Exceptions
+@using LibMatrix
+@inject ILogger<ProjectContainer> Logger
+
+@if (Constants.Debug) {
+    <p>Debug, beware: here be dragons!</p>
+    <p>ProjectContainer debug info:</p>
+    <pre>Slug: @ProjectSlug</pre>
+    <pre>Progress: @Progress.ToString()</pre>
+    @if (ProjectContext is null) {
+        <pre>ProjectContext is null!</pre>
+    }
+    else {
+        <details>
+            <summary>Context json dump</summary>
+            <pre>@ProjectContext.ToJson()</pre>
+        </details>
+        @if (ProjectContext?.Project?.Room is not null) {
+            <LinkButton OnClick="@ProjectContext.Project.Room.PermanentlyBrickRoomAsync">Dispose room</LinkButton>
+        }
+    }
+
+    <hr/>
+}
+@if (ProjectContext.Client is null) {
+    <p>Authenticating</p>
+}
+else if (ProjectContext?.Project is null) {
+    @if (Progress == Status.Loading) {
+        <p>Loading project <SimpleSpinner/></p>
+    }
+    else if (Progress == Status.NotInRoom) {
+        <p>You are not in the project room.</p>
+        <p>You must join before you can view or interact with this project.</p>
+        <LinkButton OnClick="TryJoin">Attempt to join</LinkButton>
+    }
+    else if (Progress == Status.RoomNotFound) {
+        <p>Project not found.</p>
+        <p>If you believe this is an error, please contact the project in order to obtain a new room.</p>
+    }
+}
+else {
+    @ChildContent
+}
+
+@code {
+    private Status? _progress = Status.Loading;
+
+    [Parameter]
+    public string ProjectSlug { get; set; } = null!;
+
+    [Parameter]
+    public ProjectContainerContext? ProjectContext { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+    
+    [Parameter]
+    public Func<Task>? Loaded { get; set; }
+
+    private Status? Progress {
+        get => _progress;
+        set {
+            _progress = value;
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync() {
+        if (ProjectContext is null) {
+            Logger.LogError("ProjectContext is null");
+            ProjectContext = new();
+        }
+
+        if (ProjectContext.Project != null) {
+            Logger.LogWarning("ProjectContext.Project is not null");
+        }
+
+        ProjectContext.Client ??= await BugMineStorage.GetCurrentSessionOrNavigate();
+        if (ProjectContext.Client == null) {
+            return;
+        }
+
+        Progress = Status.Loading;
+
+        try {
+            ProjectContext.Project = await ProjectContext.Client.GetProject(ProjectSlug);
+        }
+        catch (MatrixException e) {
+            if (e.ErrorCode == BugMineException.ErrorCodes.UserNotInRoom) {
+                Progress = Status.NotInRoom;
+                return;
+            }
+            else if (e.ErrorCode == BugMineException.ErrorCodes.ProjectNotFound) {
+                Progress = Status.RoomNotFound;
+                return;
+            }
+
+            throw;
+        }
+
+        Progress = Status.Done;
+        if (Loaded != null) {
+            await Loaded.Invoke();
+        }
+        
+
+        StateHasChanged();
+    }
+
+    private async Task TryJoin() {
+        var room = await ProjectContext.Client.ResolveProjectSlug(ProjectSlug);
+        bool success = false;
+        while (!success) {
+            try {
+                await room.JoinAsync();
+                if (!string.IsNullOrWhiteSpace(room.RoomId)) {
+                    success = true;
+                }
+                else {
+                    await Task.Delay(1000);
+                }
+            }
+            catch (MatrixException e) {
+                // if (e.ErrorCode == MatrixException.ErrorCodes.) {
+                // await Task.Delay(1000);
+                // continue;
+                // }
+
+                throw;
+            }
+        }
+
+        await OnInitializedAsync();
+    }
+
+    public class ProjectContainerContext {
+        public BugMineClient? Client { get; set; }
+
+        public BugMineProject? Project { get; set; }
+    }
+
+    private enum Status {
+        Loading,
+        NotInRoom,
+        RoomNotFound,
+        Done
+    }
+
+}

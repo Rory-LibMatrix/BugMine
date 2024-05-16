@@ -11,9 +11,4 @@ appsettings.Local*.json
 nixpkgs/
 *.DotSettings.user
 
-test.tsv
-test-proxy.tsv
-homeservers.txt
-LoginPayload.txt
-LoginPayload.txt.old
-BugMine.DevTools.CLI/auth.json
+**/auth.json

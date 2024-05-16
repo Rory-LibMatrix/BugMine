@@ -1,5 +1,6 @@
 @page "/Projects/New"
 @using ArcaneLibs.Extensions
+@using LibMatrix
 <h3>New project</h3>
 
 <span>Project name: </span>
@@ -20,10 +21,25 @@
     <br/>
 }
 
-<LinkButton OnClick="@CreateProject">Create project</LinkButton>
+@if (!_busy) {
+    <LinkButton OnClick="@CreateProject">Create project</LinkButton>
+}
+else {
+    <p>Powering up the framework... <SimpleSpinner/></p>
+}
 
 @code {
 
+    private bool _busy = false;
+    
+    private bool Busy {
+        get => _busy;
+        set {
+            _busy = value;
+            StateHasChanged();
+        }
+    }
+    
     private BugMineClient? Client { get; set; }
 
     private readonly ProjectInfo _request = new();
@@ -39,9 +55,15 @@
         if (Client == null) {
             return;
         }
+        Busy = true;
+        try {
+            var proj = await Client.CreateProject(_request);
+            NavigationManager.NavigateTo($"/Projects/{proj.ProjectSlug}/");
 
-        var proj = await Client.CreateProject(_request);
-        NavigationManager.NavigateTo($"/Projects/{proj.ProjectSlug}/");
+        }
+        catch (MatrixException e) {
+            
+        }
     }
 
 }

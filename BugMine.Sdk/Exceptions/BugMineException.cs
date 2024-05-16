@@ -19,5 +19,6 @@ public class BugMineException : MatrixException {
 
     public new static class ErrorCodes {
         public const string UserNotInRoom = "BUGMINE_USER_NOT_IN_ROOM";
+        public const string ProjectNotFound = "BUGMINE_PROJECT_NOT_FOUND";
     }
 }

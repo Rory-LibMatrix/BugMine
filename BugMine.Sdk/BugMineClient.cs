@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using ArcaneLibs.Extensions;
 using BugMine.Web.Classes.Exceptions;
@@ -11,14 +12,14 @@ namespace BugMine.Web.Classes;
 public class BugMineClient(AuthenticatedHomeserverGeneric homeserver) {
     public AuthenticatedHomeserverGeneric Homeserver { get; } = homeserver;
 
-    public async IAsyncEnumerable<BugMineProject> GetProjects(SemaphoreSlim? semaphore = null) {
+    public async IAsyncEnumerable<BugMineProject> GetProjects(SemaphoreSlim? semaphore = null, bool ignoreInvalidBoards = false) {
         List<Task<BugMineProject>> tasks = [];
         int count = 0;
         await foreach (var room in homeserver.GetJoinedRoomsByType(BugMineProject.RoomType, 64)) {
             tasks.Add(room.AsBugMineProject(semaphore));
         }
 
-        var results = tasks.ToAsyncEnumerable();
+        var results = tasks.ToAsyncEnumerable(skipExceptions: ignoreInvalidBoards);
         await foreach (var result in results) {
             yield return result;
         }
@@ -75,7 +76,16 @@ public class BugMineClient(AuthenticatedHomeserverGeneric homeserver) {
         }
         else {
             var alias = $"#{projectSlug}";
-            var resolveResult = await Homeserver.ResolveRoomAliasAsync(alias);
+            AliasResult? resolveResult = null;
+            try {
+                resolveResult = await Homeserver.ResolveRoomAliasAsync(alias);
+            }
+            catch (MatrixException e) {
+                if (e.ErrorCode == MatrixException.ErrorCodes.M_NOT_FOUND)
+                    throw new BugMineException(BugMineException.ErrorCodes.ProjectNotFound, $"Project with slug {projectSlug} not found");
+                throw;
+            }
+
             if (string.IsNullOrEmpty(resolveResult?.RoomId)) return null; //TODO: fallback to finding via joined rooms' canonical alias event?
 
             room = homeserver.GetRoom(resolveResult.RoomId);

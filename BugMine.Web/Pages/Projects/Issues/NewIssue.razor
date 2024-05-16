@@ -1,0 +1,15 @@
+@page "/Projects/{ProjectSlug}/Issues/New"
+<h3>New issue</h3>
+
+<ProjectContainer ProjectSlug="@ProjectSlug" ProjectContext="@ProjectContext">
+    <h1>Hi from NewIssue!</h1>
+</ProjectContainer>
+
+@code {
+
+    [Parameter]
+    public string ProjectSlug { get; set; } = null!;
+
+    public ProjectContainer.ProjectContainerContext? ProjectContext { get; set; } = new();
+
+}
