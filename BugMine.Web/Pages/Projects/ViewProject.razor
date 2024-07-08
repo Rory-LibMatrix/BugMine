@@ -1,28 +1,36 @@
 @page "/Projects/{ProjectSlug}/"
-@using LibMatrix
-@using BugMine.Web.Classes.Exceptions
+@using System.Collections.Frozen
+@using System.Reflection
 @using ArcaneLibs.Extensions
+@using BugMine.Sdk.Events.Timeline
+@using BugMine.Web.Pages.Projects.Issues
+@using BugMine.Web.Components.ScopedContainers
+@using LibMatrix
 
 <ProgressLog ></ProgressLog>
 
 <ProjectContainer ProjectSlug="@ProjectSlug" ProjectContext="@ProjectContext" Loaded="@OnProjectLoaded">
-    <h1>Hi from ViewProject!</h1>
-    <h1>@ProjectContext!.Project!.Info.Name</h1>
-
-    @if (Progress == "loading-issues") {
+    <h3>@ProjectContext!.Project!.Info.Name</h3>
+    <p>@Followers.Count followers - @Issues?.Count issues</p>
+    <LinkButton href="@(typeof(NewIssue).GetCustomAttributes<RouteAttribute>().First().Template.Replace("{ProjectSlug}", ProjectSlug))">New issue</LinkButton>
+    @if (Progress == Status.Loading) {
         <p>Loading issues, got @(Issues?.Count ?? 0) so far... <SimpleSpinner/></p>
     }
 
     @* <p>@Project.Description</p> *@
     @if (Issues != null) {
         @foreach (var issue in Issues) {
-            <pre>@issue.Data.RawContent.ToJson()</pre>
+            var issueData = issue.Data.TypedContent as BugMineIssueData;
+            <div class="issue-card" @onclick="@(() => { NavigationManager.NavigateTo(GetIssueUrl(issue)); })">
+                <div style="width: 1em; height: 1em; background-color: #00FF00; display: inline-block;"></div> @* Color based on tags... *@
+                <p>@issueData.Name</p>
+            </div>
         }
     }
 </ProjectContainer>
 
 @code {
-    private string? _progress = "loading";
+    private Status? _progress = Status.Loading;
 
     public ProjectContainer.ProjectContainerContext? ProjectContext { get; set; } = new();
 
@@ -30,8 +38,9 @@
     public string ProjectSlug { get; set; } = null!;
 
     private List<BugMineIssue>? Issues { get; set; }
+    private FrozenSet<StateEventResponse> Followers { get; set; } = FrozenSet<StateEventResponse>.Empty;
 
-    private string? Progress {
+    private Status? Progress {
         get => _progress;
         set {
             _progress = value;
@@ -40,14 +49,34 @@
     }
 
     protected async Task OnProjectLoaded() {
-        Progress = "loading-issues";
-        await foreach (var issue in ProjectContext.Project.GetIssues()) {
+        Progress = Status.Loading;
+        ProjectContext!.Project!.Room.GetMembersListAsync().ContinueWith(x => {
+            Followers = x.Result;
+            StateHasChanged();
+        });
+        await foreach (var issue in ProjectContext.Project.GetIssues(chunkLimit: 1000)) {
             Issues ??= new List<BugMineIssue>();
             Issues.Add(issue);
-            StateHasChanged();
+            // StateHasChanged();
+            if (Issues.Count % 1000 == 0) {
+                StateHasChanged();
+                Console.WriteLine($"Got issue {Issues.Count} {issue.Data.RawContent.ToJson()}");
+            }
         }
+
+        Progress = Status.Done;
 
         StateHasChanged();
     }
+
+    private enum Status {
+        Loading,
+        Done
+    }
+
+    private string GetIssueUrl(BugMineIssue issue) =>
+        typeof(ViewIssue).GetCustomAttributes<RouteAttribute>().First().Template
+            .Replace("{ProjectSlug}", ProjectSlug)
+            .Replace("{IssueId}", issue.Data.EventId);
 
 }

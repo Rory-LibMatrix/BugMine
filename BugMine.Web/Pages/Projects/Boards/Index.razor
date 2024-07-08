@@ -1,0 +1,19 @@
+@page "/Projects/{ProjectSlug}/Boards"
+@using BugMine.Web.Components.ScopedContainers
+<h3>Boards</h3>
+<ProjectContainer ProjectSlug="@ProjectSlug" ProjectContext="@ProjectContext" Loaded="@OnProjectLoaded">
+    <p>@ProjectContext.Project.Info.Name</p>
+</ProjectContainer>
+
+@code {
+
+    [Parameter]
+    public string ProjectSlug { get; set; }
+
+    public ProjectContainer.ProjectContainerContext ProjectContext { get; set; } = new();
+
+    private async Task OnProjectLoaded() {
+        
+    }
+
+}

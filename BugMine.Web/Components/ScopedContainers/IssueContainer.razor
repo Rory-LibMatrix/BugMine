@@ -1,0 +1,101 @@
+@using System.Text.Json.Serialization
+@using ArcaneLibs.Extensions
+@using BugMine.Web.Classes.Exceptions
+@using LibMatrix
+@inject ILogger<ProjectContainer> Logger
+
+@if (Constants.Debug) {
+    <details>
+        <summary>IssueContainer Debug info - Debug build, here be dragons!</summary>
+        <p>IssueContainer debug info:</p>
+        @* <pre>Slug: @ProjectSlug</pre> *@
+        @* <pre>Progress: @Progress.ToString()</pre> *@
+        @* @if (ProjectContext is null) { *@
+            @* <pre>ProjectContext is null!</pre> *@
+        @* } *@
+        @* else { *@
+            @* <details> *@
+                @* <summary>Context json dump</summary> *@
+                @* <pre>@ProjectContext.ToJson()</pre> *@
+            @* </details> *@
+            @* @if (ProjectContext?.Project?.Room is not null) { *@
+                @* <LinkButton OnClick="@ProjectContext.Project.Room.PermanentlyBrickRoomAsync">Dispose room</LinkButton> *@
+            @* } *@
+        @* } *@
+    </details>
+
+    <hr/>
+}
+@if (ProjectContext?.Client is null) {
+    <p>Authenticating</p>
+}
+else {
+    <CascadingValue Value="ProjectContext">
+        @ChildContent
+    </CascadingValue>
+}
+
+@code {
+    private Status? _progress = Status.Loading;
+
+    [Parameter]
+    public string IssueId { get; set; } = null!;
+
+    [Parameter, CascadingParameter]
+    public ProjectContainer.ProjectContainerContext? ProjectContext { get; set; }
+
+    [Parameter]
+    public IssueContainerContext? IssueContext { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public Func<Task>? Loaded { get; set; }
+
+    private Status? Progress {
+        get => _progress;
+        set {
+            _progress = value;
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync() {
+        if (ProjectContext is null) {
+            Logger.LogError("ProjectContext is null");
+            ProjectContext = new();
+        }
+
+        if (ProjectContext.Project != null) {
+            Logger.LogWarning("ProjectContext.Project is not null");
+        }
+
+        ProjectContext.Client ??= await BugMineStorage.GetCurrentSessionOrNavigate();
+        if (ProjectContext.Client == null) {
+            return;
+        }
+
+        Progress = Status.Loading;
+
+        
+        Progress = Status.Done;
+        if (Loaded != null) {
+            await Loaded.Invoke();
+        }
+
+        StateHasChanged();
+    }
+
+    public class IssueContainerContext {
+        public ProjectContainer.ProjectContainerContext ProjectContext { get; set; }
+    }
+
+    private enum Status {
+        Loading,
+        NotInRoom,
+        RoomNotFound,
+        Done
+    }
+
+}

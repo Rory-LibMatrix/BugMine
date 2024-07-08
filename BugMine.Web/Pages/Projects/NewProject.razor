@@ -1,6 +1,8 @@
 @page "/Projects/New"
 @using ArcaneLibs.Extensions
+@using BugMine.Sdk.Events.State
 @using LibMatrix
+@inject ILogger<NewProject> Logger
 <h3>New project</h3>
 
 <span>Project name: </span>
@@ -62,7 +64,7 @@ else {
 
         }
         catch (MatrixException e) {
-            
+            Logger.LogError(e, "Failed to create project");
         }
     }
 

@@ -1,8 +1,10 @@
+using BugMine.Sdk.Events.State;
+using BugMine.Web.Classes;
 using LibMatrix.EventTypes;
 
-namespace BugMine.Web.Classes;
+namespace BugMine.Sdk.Events.Timeline;
 
-[MatrixEvent(EventName = ProjectInfo.EventId)]
+[MatrixEvent(EventName = EventId)]
 public class BugMineIssueData : TimelineEventContent {
     public const string EventId = "gay.rory.bugmine.issue";
     public string Name { get; set; }

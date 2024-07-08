@@ -1,17 +1,13 @@
-@page "/Projects/{ProjectSlug}/Issues/New"
+@page "/Projects/{ProjectSlug}/Issues/{IssueId}"
 @using ArcaneLibs.Extensions
 @using BugMine.Sdk.Events.Timeline
 @using BugMine.Web.Components.ScopedContainers
 <h3>New issue</h3>
 
 <ProjectContainer ProjectSlug="@ProjectSlug" ProjectContext="@ProjectContext">
-    <p>Title: <InputText @bind-Value="@IssueData.Name"/></p>
-    
-    @if (Constants.Debug) {
-        <p>Debug info:</p>
-        <p>Issue data:</p>
-        <pre>@IssueData.ToJson()</pre>
-    }
+    <IssueContainer IssueId="@IssueId" IssueContext="@IssueContext">
+        <p>meow</p>
+    </IssueContainer>
 </ProjectContainer>
 
 @code {
@@ -19,8 +15,10 @@
     [Parameter]
     public string ProjectSlug { get; set; } = null!;
 
+    [Parameter]
+    public string IssueId { get; set; } = null!;
+
     public ProjectContainer.ProjectContainerContext? ProjectContext { get; set; } = new();
-    
-    public BugMineIssueData IssueData { get; set; } = new();
+    public IssueContainer.IssueContainerContext? IssueContext { get; set; } = new();
 
 }

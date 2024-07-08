@@ -1,4 +1,6 @@
 using ArcaneLibs.Extensions;
+using BugMine.Sdk.Events.State;
+using BugMine.Sdk.Events.Timeline;
 using LibMatrix.RoomTypes;
 
 namespace BugMine.Web.Classes;
@@ -37,8 +39,8 @@ public class BugMineProject(GenericRoom room) {
         return new BugMineIssue(Room, evt);
     }
 
-    public async IAsyncEnumerable<BugMineIssue> GetIssues() {
-        await foreach (var evt in room.GetRelatedEventsAsync(Metadata.RoomCreationEventId, "gay.rory.bugmine.issue", BugMineIssueData.EventId)) {
+    public async IAsyncEnumerable<BugMineIssue> GetIssues(int chunkLimit = 250) {
+        await foreach (var evt in room.GetRelatedEventsAsync(Metadata.RoomCreationEventId, "gay.rory.bugmine.issue", BugMineIssueData.EventId, chunkLimit: chunkLimit)) {
             yield return new BugMineIssue(Room, evt);
         }
     }

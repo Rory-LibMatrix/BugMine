@@ -5,22 +5,24 @@
 @inject ILogger<ProjectContainer> Logger
 
 @if (Constants.Debug) {
-    <p>Debug, beware: here be dragons!</p>
-    <p>ProjectContainer debug info:</p>
-    <pre>Slug: @ProjectSlug</pre>
-    <pre>Progress: @Progress.ToString()</pre>
-    @if (ProjectContext is null) {
-        <pre>ProjectContext is null!</pre>
-    }
-    else {
-        <details>
-            <summary>Context json dump</summary>
-            <pre>@ProjectContext.ToJson()</pre>
-        </details>
-        @if (ProjectContext?.Project?.Room is not null) {
-            <LinkButton OnClick="@ProjectContext.Project.Room.PermanentlyBrickRoomAsync">Dispose room</LinkButton>
+    <details>
+        <summary>ProjectContainer Debug info - Debug build, here be dragons!</summary>
+        <p>ProjectContainer debug info:</p>
+        <pre>Slug: @ProjectSlug</pre>
+        <pre>Progress: @Progress.ToString()</pre>
+        @if (ProjectContext is null) {
+            <pre>ProjectContext is null!</pre>
         }
-    }
+        else {
+            <details>
+                <summary>Context json dump</summary>
+                <pre>@ProjectContext.ToJson()</pre>
+            </details>
+            @if (ProjectContext?.Project?.Room is not null) {
+                <LinkButton OnClick="@ProjectContext.Project.Room.PermanentlyBrickRoomAsync">Dispose room</LinkButton>
+            }
+        }
+    </details>
 
     <hr/>
 }
@@ -42,7 +44,9 @@ else if (ProjectContext?.Project is null) {
     }
 }
 else {
-    @ChildContent
+    <CascadingValue Value="ProjectContext">
+        @ChildContent
+    </CascadingValue>
 }
 
 @code {
@@ -56,7 +60,7 @@ else {
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }
-    
+
     [Parameter]
     public Func<Task>? Loaded { get; set; }
 
@@ -105,7 +109,6 @@ else {
         if (Loaded != null) {
             await Loaded.Invoke();
         }
-        
 
         StateHasChanged();
     }

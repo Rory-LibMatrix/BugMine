@@ -1,6 +1,6 @@
 using LibMatrix.EventTypes;
 
-namespace BugMine.Web.Classes;
+namespace BugMine.Sdk.Events.State;
 
 [MatrixEvent(EventName = EventId)]
 public class ProjectInfo : EventContent {

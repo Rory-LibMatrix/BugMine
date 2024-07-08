@@ -36,6 +36,7 @@ public class Worker(ILogger<Worker> logger, HomeserverProviderService hsProvider
                               4) Get room count
                               5) Summarize all projects
                               6) Mass create regular rooms
+                              7) Create issues in project7
 
                               L) Logout
                               Q) Quit
@@ -86,6 +87,34 @@ public class Worker(ILogger<Worker> logger, HomeserverProviderService hsProvider
                         });
                     }));
                     Console.WriteLine($"Created 1000 rooms in {sw.Elapsed}");
+                    break;
+                }
+                case ConsoleKey.D7: {
+                    Console.Write("Slug: ");
+                    var slug = Console.ReadLine();
+                    var project = await Client.GetProject(slug);
+                    if (project == null) {
+                        Console.WriteLine("Project not found.");
+                        break;
+                    }
+                    Console.Write("Count: ");
+                    if (!int.TryParse(Console.ReadLine(), out var count)) {
+                        Console.WriteLine("Invalid count.");
+                        break;
+                    }
+                    await Task.WhenAll(Enumerable.Range(0,count).Select(async _ => {
+                        await project.CreateIssue(new() {
+                            Name = Guid.NewGuid().ToString()[..8]
+                        });
+                    }));
+                    break;
+                }
+                case ConsoleKey.D8: {
+                    await foreach (var board in Client.GetProjects(ignoreInvalidBoards: true).WithCancellation(stoppingToken)) {
+                        await foreach (var issue in board.GetIssues().WithCancellation(stoppingToken)) {
+                            Console.WriteLine(issue.Data.TypedContent);
+                        }
+                    }
                     break;
                 }
                 case ConsoleKey.L: {
@@ -145,7 +174,7 @@ public class Worker(ILogger<Worker> logger, HomeserverProviderService hsProvider
 
     private async Task<string> SummarizeProject(BugMineProject project) {
         string result = $"Project: {project.Info.Name}, slug: {project.ProjectSlug}, metadata: {project.Metadata.ToJson(indent: false)}";
-        await foreach (var issue in project.GetIssues()) {
+        await foreach (var issue in project.GetIssues(chunkLimit:50000)) {
             // Console.WriteLine($" - {issue.Data.RawContent.ToJson(indent: false)}");
             result += $"\n - {issue.Data.RawContent.ToJson(indent: false)}";
         }
